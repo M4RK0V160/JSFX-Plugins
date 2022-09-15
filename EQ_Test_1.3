@@ -1,0 +1,53 @@
+//Author: markov
+//An exercise in sample manipulatión to control frequency
+
+desc:EQ_Test_3 Sample Manipulation
+
+slider1:gain_db=0<-80,24,1>gain (dB)
+slider2:negSK=0<-1,1,0.01>negSK
+slider3:bufferDis=1<1,20,1> BuffDisp
+
+
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+
+@init
+last_gain=10^(gain_db/20);
+buffer = 1024;
+c = 0;
+
+@slider
+next_gain=10^(gain_db/20);
+negSKv = negSK;
+Disp = BufferDis;
+
+
+@block
+d_gain = (next_gain - last_gain)/samplesblock;
+
+@sample
+
+(c === 2000) ? (
+  c = 0;
+);
+buffer[c] = spl0;
+
+avg = ((buffer[c-Disp])*negSK + spl0)/2;
+
+
+ c = c + 1;
+
+
+
+spl0 = spl1 = avg;
+
+
+//Gain Code
+spl0 *= last_gain;
+spl1 *= last_gain;
+last_gain += d_gain;
+
