@@ -1,0 +1,72 @@
+desc:Saturation
+desc:Saturation [M4RK0V]
+//tags: processing amplitude gain saturation
+//author: M4RK0V
+//implemented using LOSER saturation plugin as a boiler plate.
+
+slider1:0<0,100,0.001>Saturation(%)
+slider2:1<200,9,0.0001> Shape
+slider3:1<0.1,2,0.01> Fine Tune
+
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+gfx_clear = 0;
+@slider
+foo=slider1/slider2*$pi;
+bar = sin(slider1/slider2*$pi);
+int = slider2;
+
+fK = slider3;
+
+
+
+@sample
+slider1 ? (
+spl0 = min(max( sin(max(min(spl0,1),-1)*foo*fK)/bar ,-1) ,1);
+spl1 = min(max( sin(max(min(spl1,1),-1)*foo*fK)/bar   ,-1) ,1);
+);
+
+@gfx 192 192
+
+gfxSize = min(gfx_w,gfx_h);
+
+
+gfx_r=gfx_g=gfx_b=0; gfx_a=1;
+gfx_x=gfx_y=0;
+gfx_rectto(gfx_w,gfx_h);
+
+gfx_r=gfx_g=gfx_b=0.8; gfx_a=1;
+gfx_x=gfxSize/2; gfx_y=0;
+gfx_lineto(gfxSize/2,gfxSize,0);
+gfx_x=0; gfx_y=gfxSize/2;
+gfx_lineto(gfxSize,gfxSize/2,0);
+
+gfx_x = gfxSize-20; gfx_y = gfxSize/2;
+gfx_drawchar($'I');
+gfx_drawchar($'N');
+
+gfx_x = gfxSize/2+2; gfx_y = 0;
+gfx_drawchar($'O');
+gfx_drawchar($'U');
+gfx_drawchar($'T');
+
+slider1 ? (
+  gfx_r=0.5; gfx_g=1; gfx_b=0; gfx_a=1;
+  gfx_x=0; gfx_y=gfxSize;
+  x = -1;
+  while(
+    y = -sin(x*foo)/bar;
+    gfx_lineto(x*gfxSize/2+gfxSize/2,y*gfxSize/2+gfxSize/2,1);
+    (x+=0.1) <= 1;
+  );
+  gfx_lineto(gfxSize,0,1);
+):(
+  gfx_r=0.5; gfx_g=1; gfx_b=0; gfx_a=1;
+  gfx_x=0; gfx_y=gfxSize;
+  gfx_lineto(gfxSize,0,1);
+);
